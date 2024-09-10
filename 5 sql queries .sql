@@ -1,47 +1,33 @@
---Find all Premium members
-SELECT m.MemberID, m.FirstName, m.LastName, ms.MembershipType
-FROM Members m
-JOIN Memberships ms ON m.MembershipID = ms.MembershipID
-WHERE ms.MembershipType = 'Premium';
+-- Find all Premium members
+SELECT Members.MemberID, Members.FirstName, Members.LastName, Memberships.MembershipType
+FROM Members
+JOIN Memberships ON Members.MembershipID = Memberships.MembershipID
+WHERE Memberships.MembershipType = 'Premium';
 
+-- Count members by membership type
+SELECT Memberships.MembershipType, COUNT(Members.MemberID) AS NumberOfMembers
+FROM Members
+JOIN Memberships ON Members.MembershipID = Memberships.MembershipID
+GROUP BY Memberships.MembershipType;
 
+-- Count member attendance within a specific date range
+SELECT Members.MemberID, Members.FirstName, Members.LastName, 
+       COUNT(MemberAttendance.AttendanceID) as AttendanceCount
+FROM Members
+LEFT JOIN MemberAttendance ON Members.MemberID = MemberAttendance.MemberID
+    AND MemberAttendance.AttendanceDate BETWEEN '2023-01-01' AND '2023-02-17'
+GROUP BY Members.MemberID, Members.FirstName, Members.LastName
+ORDER BY Members.MemberID;
 
+-- Sum member payments by payment method
+SELECT Members.MemberID, Members.FirstName, Members.LastName, Payments.PaymentMethod, SUM(Payments.Amount) AS TotalPayments
+FROM Members
+JOIN Payments ON Members.MemberID = Payments.MemberID
+GROUP BY Members.MemberID, Members.FirstName, Members.LastName, Payments.PaymentMethod
+ORDER BY Members.MemberID, Payments.PaymentMethod;
 
---Count members by membership type
-SELECT ms.MembershipType, COUNT(m.MemberID) AS NumberOfMembers
-FROM Members m
-JOIN Memberships ms ON m.MembershipID = ms.MembershipID
-GROUP BY ms.MembershipType;
-
-
-
-
---Count member attendance within a specific date range
-SELECT m.MemberID, m.FirstName, m.LastName, 
-       COUNT(a.AttendanceID) as AttendanceCount
-FROM Members m
-LEFT JOIN MemberAttendance a ON m.MemberID = a.MemberID
-    AND a.AttendanceDate BETWEEN '2023-01-01' AND '2023-02-17'
-GROUP BY m.MemberID, m.FirstName, m.LastName
-ORDER BY m.MemberID;
-
-
-
-
---Sum member payments by payment method
-SELECT m.MemberID, m.FirstName, m.LastName, p.PaymentMethod, SUM(p.Amount) AS TotalPayments
-FROM Members m
-JOIN Payments p ON m.MemberID = p.MemberID
-GROUP BY m.MemberID, m.FirstName, m.LastName, p.PaymentMethod
-ORDER BY m.MemberID, p.PaymentMethod;
-
-
-
-
---List of equipment that has maintenance from January 01, 2023 to March 05, 2023
-SELECT e.EquipmentName, em.MaintenanceDate, em.MaintenanceDetails
-FROM Equipment e
-JOIN EquipmentMaintenance em ON e.EquipmentID = em.EquipmentID
-WHERE em.MaintenanceDate BETWEEN '2023-01-01' AND '2023-03-05';
-
-
+-- List of equipment that has maintenance from January 01, 2023 to March 05, 2023
+SELECT Equipment.EquipmentName, EquipmentMaintenance.MaintenanceDate, EquipmentMaintenance.MaintenanceDetails
+FROM Equipment
+JOIN EquipmentMaintenance ON Equipment.EquipmentID = EquipmentMaintenance.EquipmentID
+WHERE EquipmentMaintenance.MaintenanceDate BETWEEN '2023-01-01' AND '2023-03-05';
